@@ -1,0 +1,23 @@
+GetTripDetail what are the details for {Item}
+GetTripDetail what {Item} again
+GetTripDetail give me details on {Item}
+GetTripDetail what is {Item}
+GetTripDetail tell me about {Item}
+GetTripDetail tell me more about {Item}
+GetTripDetail tell me more details on {Item}
+GetTripDetail tell me more details about {Item}
+GetTripDetail tell me more about my trip to {Item}
+
+DeleteTrip delete {Item}
+DeleteTrip remove {Item}
+DeleteTrip delete {Item} from my schdule
+DeleteTrip remove {Item} from my schdule
+DeleteTrip i wont be going to {Item} anymore
+DeleteTrip canceled my trip to {Item}
+
+GetTripSummary what does my schudle look like
+GetTripSummary schdule
+GetTripSummary what is my schdule
+GetTripSummary what plans do i have
+GetTripSummary whats my schdule look like
+GetTripSummary do i have a trip

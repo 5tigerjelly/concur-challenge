@@ -1,0 +1,34 @@
+{
+  "intents": [
+    {
+      "slots": [
+        {
+          "name": "Item",
+          "type": "LIST_OF_TRIP_NAMES"
+        }
+      ],
+      "intent": "GetTripDetail"
+    },
+    {
+      "slots": [
+        {
+          "name": "Item",
+          "type": "LIST_OF_TRIP_NAMES"
+        }
+      ],
+      "intent": "DeleteTrip"
+    },
+    {
+      "intent": "GetTripSummary"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
