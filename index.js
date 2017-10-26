@@ -54,6 +54,7 @@ HowTo.prototype.intentHandlers = {
     "DeleteTrip": function (intent, session, response) {
         var tripName = intent.slots.Item.value;
         console.log(tripName);
+        response.tell("Okay! your trip to " + tripName + " has been canceled.");
         // convertTripNameToId(tripName)
         // .then(function(tripId) {
         //     console.log("Trip has been found:" 
