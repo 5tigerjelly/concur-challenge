@@ -1,0 +1,23 @@
+{
+  "name": "concur-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5tigerjelly/concur-challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/5tigerjelly/concur-challenge/issues"
+  },
+  "homepage": "https://github.com/5tigerjelly/concur-challenge#readme",
+  "dependencies": {
+    "axios": "^0.17.0",
+    "xml2js": "^0.4.19"
+  }
+}

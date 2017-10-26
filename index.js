@@ -21,8 +21,10 @@
 
 'use strict';
 
-var AlexaSkill = require('./AlexaSkill'),
-    recipes = require('./recipes');
+var AlexaSkill = require('./AlexaSkill');
+var axios = require('axios');
+var parseString = require('node_modules/xml2js').parseString;
+const ACCESS_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjE0NTU2MTQwMjIifQ.eyJjb25jdXIuc2NvcGVzIjpbIm9wZW5pZCIsIlRSVlJFUSIsIlRSVlBUUyIsIlVOVVRYIiwiTUVESUMiLCJUTUNTUCIsIlRTQUkiLCJFTUVSRyIsIkNPTVBEIiwiUEFTU1YiLCJUQVhJTlYiLCJTVVBTVkMiLCJUUlZQUkYiLCJUV1MiLCJSQ1RJTUciLCJQQVlCQVQiLCJOT1RJRiIsIk1UTkciLCJMSVNUIiwiSk9CTE9HIiwiSVRJTkVSIiwiSU5WVkVOIiwiSU5WVFYiLCJJTlZQTyIsIklOVlBNVCIsIklOU0dIVCIsIklNQUdFIiwiR0hPU1QiLCJGT1AiLCJGSVNWQyIsIkVYVFJDVCIsIkJBTksiLCJDQ0FSRCIsIkVYUFJQVCIsIkVWUyIsIkVSRUNQVCIsIkNPTlJFUSIsIkNPTkZJRyIsIkFUVEVORCIsInVzZXJfcmVhZCIsIm1pbGVhZ2UucmF0ZS53cml0ZW9ubHkiLCJtaWxlYWdlLnJhdGUucmVhZCIsIm1pbGVhZ2UudmVoaWNsZS53cml0ZW9ubHkiLCJtaWxlYWdlLnZlaGljbGUucmVhZCIsIm1pbGVhZ2Uuam91cm5leS53cml0ZW9ubHkiLCJtaWxlYWdlLmpvdXJuZXkucmVhZCIsInRyYXZlbHJlcXVlc3Qud3JpdGUiLCJjcmVkaXRjYXJkYWNjb3VudC5yZWFkIiwiY29tcGFueS53cml0ZSIsImNvbXBhbnkucmVhZCIsInVzZXIud3JpdGUiLCJ1c2VyLnJlYWQiLCJyZWNlaXB0cy53cml0ZSIsInJlY2VpcHRzLndyaXRlb25seSIsIlVTRVIiLCJUUklQSVQiLCJDT01QQU5ZIiwicmVjZWlwdHMucmVhZCJdLCJhdWQiOiIqIiwiY29uY3VyLmFwcElkIjoiYzM3ZDk5MzctMTdhYi00ZDc4LWIwZjktYTNiZmMyODQ5YjZlIiwic3ViIjoiMWQyM2M4NDEtMzEzZC00MmNjLWFmNmYtMWE1MDY2OGZlOGIzIiwiaXNzIjoiaHR0cHM6Ly91cy5hcGkuY29uY3Vyc29sdXRpb25zLmNvbSIsImNvbmN1ci5wcm9maWxlIjoiaHR0cHM6Ly91cy5hcGkuY29uY3Vyc29sdXRpb25zLmNvbS9wcm9maWxlL3YxL3ByaW5jaXBhbHMvMWQyM2M4NDEtMzEzZC00MmNjLWFmNmYtMWE1MDY2OGZlOGIzIiwiZXhwIjoxNTA5MDI3OTg4LCJjb25jdXIudmVyc2lvbiI6MiwiY29uY3VyLnR5cGUiOiJ1c2VyIiwiY29uY3VyLmFwcCI6Imh0dHBzOi8vdXMuYXBpLmNvbmN1cnNvbHV0aW9ucy5jb20vcHJvZmlsZS92MS9hcHBzL2MzN2Q5OTM3LTE3YWItNGQ3OC1iMGY5LWEzYmZjMjg0OWI2ZSIsIm5iZiI6MTUwOTAyNDM4OCwiaWF0IjoxNTA5MDI0Mzg4fQ.H5KCMe10vPN9V-NRUeRUdXg_Xm7VANhGASBvLUkVJiHI1Jqwa1uIxXmZ-iQ2AE71esYmD5tuK2B3mbYMCuQJJw4PTQLovN8FmTnG0ZAR9YPrPLFnUWvLXan6BQZ4U4m60aGjEAqhw5vGKX_CVbORvDdhEQMAm34dQI-zZUg4rlE6CoYJSu8JRAkmB6uF8DpKy91Cldm-Y6PHRaggzYq5goVDN3-Dc4g82B7rteYW_M1ASA0mEgi3R5kXUah0HihbZETEREE35uvFc0NuI9zrb2FETItgm_CuhOj_GQrHASo2Ja06R_HRUWys2Slvcypf341sRXUyu5iU7UC16DDLgg";
 
 var APP_ID = undefined; //OPTIONAL: replace with 'amzn1.echo-sdk-ams.app.[your-unique-value-here]';
 
@@ -51,19 +53,62 @@ HowTo.prototype.eventHandlers.onLaunch = function (launchRequest, session, respo
 HowTo.prototype.intentHandlers = {
     "DeleteTrip": function (intent, session, response) {
         var tripName = intent.slots.Item.value;
+        convertTripNameToId(tripName).then()
+        cancelTrip()
         var speechOutput = "Okay, I will delete your " + tripName + " trip.";
         response.tell(speechOutput);
     },
 
     "GetTripSummary": function (intent, session, response) {
-        var speechOutput = "This is your trip summary";
-        response.tell(speechOutput);
+        getAllTrips().then(function(res) {
+            var trips = res.data;
+            var tripNames = [];
+            var speechOutput = "Sorry there was an error."
+
+            for(let i = 0; i < trips.length; i++){
+                tripNames.push(trips[i].TripName);
+            }
+            if(tripNames){
+                var tripsJoin = tripNames.join(',');
+
+                speechOutput = "This is your trip summary.";
+                speechOutput += " You have a trip to: " + tripsJoin;
+
+            }else{
+                speechOutput = "You currently do not have any trips planned.";
+            }
+            response.tell(speechOutput);
+        }).catch(function(err) {
+            // catch errors
+            let errorMsg = "Sorry, there was an error getting your trips.";
+            response.tell(errorMsg);
+        });  
     },
 
     "GetTripDetail": function (intent, session, response) {
         var tripName = intent.slots.Item.value;
-        var speechOutput = "This is the trip detail for " + tripName + ".";
-        response.tell(speechOutput);
+        var speechOutput = "Sorry there was an error.";
+        convertTripNameToId(tripName)
+        .then(function(tripId) {
+            if (tripId === null) {
+                response.tell("Sorry, there is no trip by that name.");
+            }
+            return getTripDetails(tripId)
+            
+        })
+        .then(function(d) {
+            parseString(d.data, function(err, res) {
+                console.log(res);
+                speechOutput = "Your trip to " + res.Itinerary.TripName[0] + " is on " + res.Itinerary.StartDateLocal[0];
+                console.log(speechOutput);
+                console.log(response);
+                response.tell(speechOutput);
+            }, this);
+        })
+        .catch(function(err){
+            let errorMsg = "Sorry, there was an error getting your trip details.";
+            response.tell(errorMsg);
+        });
     },
 
     "AMAZON.StopIntent": function (intent, session, response) {
@@ -95,3 +140,59 @@ exports.handler = function (event, context) {
     var howTo = new HowTo();
     howTo.execute(event, context);
 };
+
+
+function convertTripNameToId(tripName) {
+    return getAllTrips().then(function(res) {
+        tripName = tripName.toLowerCase();
+        res = res.data;
+        for (var i = 0; i < res.length; i++) {
+            var currentTripName = res[i].TripName.toLowerCase();
+            console.log("Checking if " + tripName + " equals " + currentTripName);
+            if (currentTripName == tripName) {
+                console.log("FOUND IT!");
+                return res[i].TripId;
+            }
+        }
+        return null;
+    })
+}
+
+function getAllTrips() {
+    return axios.get("https://www.concursolutions.com/api/travel/trip/v1.1/", {
+        headers: {
+            "Accept": "application/json",
+            "Authorization": ACCESS_TOKEN
+        }
+    });
+}
+
+function getTripDetails(tripId) {
+    return axios.get("https://www.concursolutions.com/api/travel/trip/v1.1/" + tripId, {
+        headers: {
+            "Accept": "application/json",
+            "Authorization": ACCESS_TOKEN
+        }
+    })
+}
+
+function cancelTrip(tripId) {
+    axios.post("https://www.concursolutions.com/api/travel/trip/v1.1/cancel?tripid=" + tripId, {
+        headers: {
+            "Accept": "application/xml",
+            "Authorization": ACCESS_TOKEN
+        }
+    }).then(function(d) {
+        parseString(d.data, function (err, result) {
+            console.log(result);
+            if (result.Error) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }).catch(function(err){
+        console.log(err)
+        return null;
+    });
+}
