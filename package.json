@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/5tigerjelly/concur-challenge#readme",
   "dependencies": {
-    "axios": "^0.17.0",
+    "axios": "^0.21.1",
     "xml2js": "^0.4.19"
   }
 }
